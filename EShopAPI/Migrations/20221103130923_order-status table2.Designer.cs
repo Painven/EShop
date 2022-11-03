@@ -3,6 +3,7 @@ using System;
 using EShopAPI.DataAccess;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,10 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace EShopAPI.Migrations
 {
     [DbContext(typeof(EShopDbContext))]
-    partial class EShopDbContextModelSnapshot : ModelSnapshot
+    [Migration("20221103130923_order-status table2")]
+    partial class orderstatustable2
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -155,7 +157,7 @@ namespace EShopAPI.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("order_status");
+                    b.ToTable("OrderStatuses");
                 });
 
             modelBuilder.Entity("EShopAPI.DataAccess.Product", b =>
@@ -209,7 +211,7 @@ namespace EShopAPI.Migrations
             modelBuilder.Entity("EShopAPI.DataAccess.Order", b =>
                 {
                     b.HasOne("EShopAPI.DataAccess.OrderStatus", "OrderStatus")
-                        .WithMany("Orders")
+                        .WithMany()
                         .HasForeignKey("OrderStatusId");
 
                     b.Navigation("OrderStatus");
@@ -243,11 +245,6 @@ namespace EShopAPI.Migrations
             modelBuilder.Entity("EShopAPI.DataAccess.Order", b =>
                 {
                     b.Navigation("OrderLines");
-                });
-
-            modelBuilder.Entity("EShopAPI.DataAccess.OrderStatus", b =>
-                {
-                    b.Navigation("Orders");
                 });
 #pragma warning restore 612, 618
         }

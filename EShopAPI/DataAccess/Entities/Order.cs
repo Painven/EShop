@@ -14,7 +14,7 @@ public class Order
     public DateTime Created { get; set; } = DateTime.UtcNow;
 
     [Column("complete_date")]
-    public DateTime? CompleteDate { get; set; } = DateTime.UtcNow;
+    public DateTime? CompleteDate { get; set; } = null;
 
     [Column("customer_name")]
     public string CustomerName { get; set; }
@@ -28,8 +28,9 @@ public class Order
     [Column("payment_method")]
     public string PaymentMethod { get; set; }
 
-    [Column("is_completed")]
-    public bool IsCompleted { get; set; }
+    [Column("status_id")]
+    public int? OrderStatusId { get; set; } = 1;
 
+    public OrderStatus OrderStatus { get; set; }
     public ICollection<OrderLine> OrderLines { get; set; } = new List<OrderLine>();
 }

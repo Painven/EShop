@@ -29,15 +29,15 @@ public class OrderController : ControllerBase
     {
         using var db = dbFactory.CreateDbContext();
 
-        var data = db.Orders.Include(o => o.OrderLines)
-            .OrderBy(o => o.IsCompleted)
+        var data = db.Orders
+            .Include(o => o.OrderLines).Include(o => o.OrderStatus)
             .Take(MAX_ORDERS_PER_REQUEST)
             .Select(dbOrder => mapper.Map<OrderDto>(dbOrder))
             .ToArray();
 
         if (data.Length > 0)
         {
-            return Ok(data);
+            return data;
         }
         return NoContent();
     }
@@ -108,22 +108,37 @@ public class OrderController : ControllerBase
     }
 
     [HttpPatch("{id}")]
-    public ActionResult<OrderDto> ToogleOrderStatus(int id)
+    public ActionResult<OrderDto> ChangeOrderStatus(int id, [FromQuery]string newStatus)
     {
         using var db = dbFactory.CreateDbContext();
 
         var dbOrder = db.Orders.SingleOrDefault(o => o.Id == id);
+        var dbStatus = db.OrderStatuses.SingleOrDefault(o => o.Name == newStatus);
 
-        if (dbOrder != null)
+        if (dbOrder != null && dbStatus != null)
         {
-            dbOrder.IsCompleted = !dbOrder.IsCompleted;
-            dbOrder.CompleteDate = dbOrder.IsCompleted ? DateTime.UtcNow : (DateTime?)null;
+            dbOrder.OrderStatus = dbStatus;
+            dbOrder.CompleteDate = (dbStatus.Name == "Выполнен") ? DateTime.UtcNow : (DateTime?)null;
             db.SaveChanges();
 
             return Ok(mapper.Map<OrderDto>(dbOrder));
         }
 
         return NotFound();
+    }
+
+    [HttpGet("statuses")]
+    public ActionResult<OrderStatus[]> GetOrderStatuses()
+    {
+        using var db = dbFactory.CreateDbContext();
+
+        var statuses = db.OrderStatuses.OrderBy(o => o.SortOrder).ToArray();
+
+        if(statuses.Length > 0)
+        {
+            return statuses;
+        }
+        return NoContent();
     }
 }
 

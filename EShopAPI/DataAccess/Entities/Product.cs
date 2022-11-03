@@ -12,6 +12,7 @@ public class Product
 
     [Column("created")]
     public DateTime Created { get; set; } = DateTime.Now;
+
     [Required]
     [MinLength(4)]
     [Column("name")]
@@ -30,6 +31,7 @@ public class Product
     public decimal Price { get; set; }
 
     [Column("category_id")]
-    public int CategoryId { get; set; }
+    public int? CategoryId { get; set; }
+
     public Category Category { get; set; }
 }

@@ -9,9 +9,17 @@ public record OrderDto
     public string ShippingMethod { get; init; }
     public string PaymentMethod { get; init; }
     public int TotalSum { get; init; }
-    public bool IsCompleted { get; init; }
+    public string OrderStatus { get; init; }
     public DateTime? CompleteDate { get; init; }
     public OrderLineDto[] Products { get; init; }
+}
+
+public record OrderLineDto
+{
+    public int Quantity { get; init; }
+    public int ProductId { get; init; }
+    public string ProductName { get; init; }
+    public string Price { get; init; }
 }
 
 public record CreateOrderDto
