@@ -12,7 +12,7 @@ public class OrderAutomapperProfile : Profile
 
         CreateMap<OrderDto, Order>();
         CreateMap<Order, OrderDto>()
-            .ForMember(o => o.TotalSum, o => o.MapFrom(x => x.OrderLines.Sum(ol => ol.Price)));
+            .ForMember(o => o.TotalSum, o => o.MapFrom(x => x.OrderLines.Sum(ol => ol.Price * ol.Quantity)));
 
     }
 }
