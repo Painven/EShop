@@ -20,7 +20,7 @@ public class ProductController : ControllerBase
     }
 
     [HttpGet]
-    public ProductDto[] GetAll()
+    public ActionResult<ProductDto[]> GetAll()
     {
         using var db = dbFactory.CreateDbContext();
 
@@ -30,42 +30,51 @@ public class ProductController : ControllerBase
             .Select(x => mapper.Map<ProductDto>(x))
             .ToArray();
 
-        return products;
+        if (products.Length > 0)
+        {
+            return Ok(products);
+        }
+        return NoContent();
     }
 
     [HttpGet("{id}")]
-    public ProductDto Get(int id)
+    public ActionResult<ProductDto> Get(int id)
     {
         using var db = dbFactory.CreateDbContext();
 
-        var product = db.Products.SingleOrDefault(p => p.Id == id);
+        var dbProduct = db.Products.SingleOrDefault(p => p.Id == id);
 
-        return mapper.Map<ProductDto>(product);
+        if (dbProduct != null)
+        {
+            var dto = mapper.Map<ProductDto>(dbProduct);
+            return Ok(dto);
+        }
+
+        return NotFound();
     }
 
-    [HttpPost]
-    public bool CreateNew([FromBody] ProductDto product)
+        [HttpPost]
+    public ActionResult CreateNew([FromBody] ProductDto product)
     {
         using var db = dbFactory.CreateDbContext();
-        bool addResult = false;
         try
         {
             Product newProduct = mapper.Map<Product>(product);
 
             db.Products.Add(newProduct);
 
-            addResult = db.SaveChanges() >= 1;
+            return db.SaveChanges() >= 1 ? Ok() : BadRequest();
         }
-        catch
+        catch(Exception ex)
         {
-            addResult = false;
+            
         }
-        return addResult;
+        return BadRequest();
 
     }
 
     [HttpDelete("{id}")]
-    public bool DeleteProduct(int id)
+    public ActionResult DeleteProduct(int id)
     {
         using var db = dbFactory.CreateDbContext();
 
@@ -73,13 +82,15 @@ public class ProductController : ControllerBase
         if (dbProduct != null)
         {
             db.Products.Remove(dbProduct);
-            return db.SaveChanges() >= 1;
+            db.SaveChanges();
+
+            return Ok();
         }
-        return false;
+        return NotFound();
     }
 
     [HttpPut("{id}")]
-    public bool UpdateProduct([FromBody] ProductDto product)
+    public ActionResult UpdateProduct([FromBody] ProductDto product)
     {
         using var db = dbFactory.CreateDbContext();
 
@@ -90,9 +101,11 @@ public class ProductController : ControllerBase
             dbProduct.Image = product.Image;
             dbProduct.Price = product.Price;
             dbProduct.CategoryId = product.CategoryId;
+            db.SaveChanges();
 
-            return db.SaveChanges() == 1;
+            return Ok();
         }
-        return false;
+
+        return NotFound();
     }
 }

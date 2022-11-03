@@ -7,12 +7,20 @@ namespace EShopAPI.Mapper;
 public class OrderAutomapperProfile : Profile
 {
     public OrderAutomapperProfile()
-    {
+    {      
+        CreateMap<CreateOrderDto, Order>();
+        CreateMap<Order, CreateOrderDto>();
+        
+        
         CreateMap<OrderLine, OrderLineDto>();
+        CreateMap<OrderLineDto, OrderLine>();
 
-        CreateMap<OrderDto, Order>();
+        CreateMap<OrderDto, Order>()
+            .ForMember(o => o.OrderLines, o => o.MapFrom(x => x.Products));
+
         CreateMap<Order, OrderDto>()
-            .ForMember(o => o.TotalSum, o => o.MapFrom(x => x.OrderLines.Sum(ol => ol.Price * ol.Quantity)));
+            .ForMember(o => o.TotalSum, o => o.MapFrom(x => x.OrderLines.Sum(ol => ol.Price * ol.Quantity)))
+            .ForMember(o => o.Products, o => o.MapFrom(x => x.OrderLines));
 
     }
 }

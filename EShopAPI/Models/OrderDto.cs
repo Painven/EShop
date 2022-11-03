@@ -13,3 +13,18 @@ public record OrderDto
     public DateTime? CompleteDate { get; init; }
     public OrderLineDto[] Products { get; init; }
 }
+
+public record CreateOrderDto
+{
+    public string CustomerName { get; init; }
+    public string CustomerEmail { get; init; }
+    public string ShippingMethod { get; init; }
+    public string PaymentMethod { get; init; }
+    public CreateOrderProductLineDto[] Products { get; init; }
+}
+
+public record CreateOrderProductLineDto
+{
+    public int ProductId { get; init; }
+    public int Quantity { get; init; }
+}

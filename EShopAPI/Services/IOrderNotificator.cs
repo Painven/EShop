@@ -43,11 +43,12 @@ public class MailKitOrderEmailNotificator : IOrderNotificator
         {
             using var smtp = new SmtpClient();
             smtp.Connect(serverSmtpHost, serverSmtpPort, SecureSocketOptions.SslOnConnect);
-
             smtp.Authenticate(serverUsername, serverPassword);
             await smtp.SendAsync(email);
-
             smtp.Disconnect(true);
+
+            string successMsg = $"Уведомление о заказе отправлено '{serverUsername ?? string.Empty}'-- > '{customerEmail ?? String.Empty}'";
+            logger.LogInformation($"{successMsg}");
         }
         catch (Exception ex)
         {

@@ -14,6 +14,7 @@ public class OrderController : ControllerBase
     private readonly IDbContextFactory<EShopDbContext> dbFactory;
     private readonly IMapper mapper;
     private readonly IOrderNotificator notificator;
+    const int MAX_ORDERS_PER_REQUEST = 100;
 
     public OrderController(IDbContextFactory<EShopDbContext> dbFactory, IMapper mapper, IOrderNotificator notificator)
     {
@@ -22,16 +23,23 @@ public class OrderController : ControllerBase
         this.notificator = notificator;
     }
 
+    //TODO: добавить пагинация (сейчас просто максимум MAX_ORDERS_PER_REQUEST штук)
     [HttpGet]
     public ActionResult<OrderDto[]> GetAllOrders()
     {
         using var db = dbFactory.CreateDbContext();
 
         var data = db.Orders.Include(o => o.OrderLines)
+            .OrderBy(o => o.IsCompleted)
+            .Take(MAX_ORDERS_PER_REQUEST)
             .Select(dbOrder => mapper.Map<OrderDto>(dbOrder))
             .ToArray();
 
-        return Ok(data);
+        if (data.Length > 0)
+        {
+            return Ok(data);
+        }
+        return NoContent();
     }
 
     [HttpGet("{id}")]
@@ -39,7 +47,9 @@ public class OrderController : ControllerBase
     {
         using var db = dbFactory.CreateDbContext();
 
-        var dbOrder = db.Orders.SingleOrDefault(o => o.Id == id);
+        var dbOrder = db.Orders
+            .Include(o => o.OrderLines)
+            .SingleOrDefault(o => o.Id == id);
 
         if (dbOrder != null)
         {
@@ -50,8 +60,13 @@ public class OrderController : ControllerBase
     }
 
     [HttpPost]
-    public ActionResult<OrderDto> CreateOrder([FromBody] OrderDto order)
+    public ActionResult<OrderDto> CreateOrder([FromBody] CreateOrderDto order)
     {
+        /*TODO: Тут может быть ошибка, что например если клиент долго сидит в корзине с товаром то у него будет одна цена
+                А при доставке на сервер возьмется актуальная на текущий момент
+                Нужно либо обновлять переодически через JS в LocalStorage у клиента
+                Либо полностью отвергать заказ если сумма от клиента не совпадает с суммой всего заказа посчитанного на сервере */
+
         using var db = dbFactory.CreateDbContext();
 
         var dbOrder = mapper.Map<Order>(order);
@@ -65,7 +80,7 @@ public class OrderController : ControllerBase
             var dbProduct = db.Products.SingleOrDefault(p => p.Id == l.ProductId);
             if (dbProduct == null)
             {
-                throw new ArgumentException("Невозможно добавить товар с таким ID");
+                return NotFound();
             }
 
             OrderLine line = new OrderLine()
@@ -75,15 +90,18 @@ public class OrderController : ControllerBase
                 Quantity = l.Quantity,
                 ProductId = l.ProductId
             };
+
             dbOrder.OrderLines.Add(line);
         }
         dbOrder.Created = DateTime.UtcNow;
 
         if (db.SaveChanges() >= 1)
         {
+            var createdOrder = mapper.Map<OrderDto>(dbOrder);
+
             notificator.SendNewOrderNotification(order.CustomerEmail, dbOrder.Id);
 
-            return Ok(mapper.Map<OrderDto>(dbOrder));
+            return createdOrder;
         }
 
         return BadRequest();
@@ -107,8 +125,6 @@ public class OrderController : ControllerBase
 
         return NotFound();
     }
-
-
 }
 
 

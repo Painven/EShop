@@ -7,7 +7,7 @@ public record CategoryDetailsDto
     public string Name { get; init; }
     public string Image { get; init; }
     public string ImageSmall { get; init; }
-    public ProductDto[] Products { get; init; }
+    public ProductDto[] Products { get; set; }
     public int ProductsInCategory { get; set; }
 }
 

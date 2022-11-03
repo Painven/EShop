@@ -21,74 +21,101 @@ public class CategoryController : ControllerBase
     }
 
     [HttpGet]
-    public CategoryDetailsDto[] GetAll()
+    public ActionResult<CategoryDetailsDto[]> GetAll()
     {
         using var db = dbFactory.CreateDbContext();
 
-        var categories = db.Categories.Include(p => p.Products)
+        try
+        {
+            var categories = db.Categories.Include(p => p.Products)
             .OrderBy(c => c.Id)
             .Select(x => mapper.Map<CategoryDetailsDto>(x))
             .ToArray();
 
-        return categories;
+            categories.ToList().ForEach(c => c.Products = null);
+
+            return Ok(categories);
+        }
+        catch(Exception ex)
+        {
+
+        }
+
+        return NoContent();
     }
 
     [HttpGet("{id}")]
-    public CategoryDetailsDto GetCategoryById(int id, int page = 1, int pageSize = 32)
+    public ActionResult<CategoryDetailsDto> GetCategoryById(int id, int page = 1, int pageSize = 32)
     {
         using var db = dbFactory.CreateDbContext();
 
-        int totalProducts = db.Products.Where(p => p.CategoryId == id).Count();
+        try
+        {
+            int totalProducts = db.Products.Where(p => p.CategoryId == id).Count();
 
-        var category = db.Categories
-            .Include(c => c.Products.OrderBy(p => p.Id).Skip((page - 1) * pageSize).Take(pageSize))
-            .SingleOrDefault(c => c.Id == id);
+            var category = db.Categories
+                .Include(c => c.Products.OrderBy(p => p.Id).Skip((page - 1) * pageSize).Take(pageSize))
+                .SingleOrDefault(c => c.Id == id);
 
-        var dto = mapper.Map<CategoryDetailsDto>(category);
-        dto.ProductsInCategory = totalProducts;
+            var dto = mapper.Map<CategoryDetailsDto>(category);
+            dto.ProductsInCategory = totalProducts;
 
-        return dto;
+            if (dto != null)
+            {
+                return Ok(dto);
+            }
+        }
+        catch(Exception ex)
+        {
+
+        }
+
+        return NotFound();
     }
 
     [HttpPost]
-    public bool CreateNew([FromBody] CategoryDto category)
+    public ActionResult CreateNew([FromBody] CategoryDto category)
     {
         using var db = dbFactory.CreateDbContext();
-        bool addResult = false;
         try
         {
             Category newCategory = mapper.Map<Category>(category);
 
             db.Categories.Add(newCategory);
 
-            addResult = db.SaveChanges() >= 1;
+            return db.SaveChanges() >= 1 ? Ok() : BadRequest();
+
         }
         catch (Exception ex)
         {
-            addResult = false;
+            
         }
-        return addResult;
 
+        return BadRequest();
     }
 
     [HttpPut]
-    public bool UpdateCategory([FromBody] CategoryDto category)
+    public ActionResult UpdateCategory([FromBody] CategoryDto category)
     {
         using var db = dbFactory.CreateDbContext();
 
         var dbCategory = db.Categories.Find(category.Id);
+
         if (dbCategory != null)
         {
             dbCategory.Name = category.Name;
             dbCategory.Image = category.Image;
 
-            return db.SaveChanges() >= 1;
+            return db.SaveChanges() >= 1 ? Ok() : BadRequest();
         }
-        return false;
+
+        return NotFound();
+
+        
     }
 
     [HttpDelete("{id}")]
-    public bool DeleteCategory(int id)
+    public ActionResult DeleteCategory(int id)
     {
         using var db = dbFactory.CreateDbContext();
 
@@ -96,8 +123,11 @@ public class CategoryController : ControllerBase
         if (dbCategory != null)
         {
             db.Categories.Remove(dbCategory);
-            return db.SaveChanges() >= 1;
+            db.SaveChanges();
+
+            return Ok();
         }
-        return false;
+
+        return NotFound();
     }
 }
