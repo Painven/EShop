@@ -8,19 +8,19 @@ public class OrderLine
 {
     [Key]
     [Column("id")]
-    public int Id { get; set; }  
+    public int Id { get; set; }
     [Required]
     [MinLength(4)]
-    [Column("product_name")] 
+    [Column("product_name")]
     public string ProductName { get; set; }
-    [Column("product_id")] 
+    [Column("product_id")]
     public int? ProductId { get; set; }
-    [Column("quantity")] 
+    [Column("quantity")]
     public int Quantity { get; set; }
-    [Column("price")] 
+    [Column("price")]
     public decimal Price { get; set; }
 
-    [Column("order_id")] 
+    [Column("order_id")]
     public int OrderId { get; set; }
     public Order Order { get; set; }
 }

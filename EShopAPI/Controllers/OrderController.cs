@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using EShopAPI.DataAccess;
 using EShopAPI.Models;
+using EShopAPI.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -12,11 +13,13 @@ public class OrderController : ControllerBase
 {
     private readonly IDbContextFactory<EShopDbContext> dbFactory;
     private readonly IMapper mapper;
+    private readonly IOrderNotificator notificator;
 
-    public OrderController(IDbContextFactory<EShopDbContext> dbFactory, IMapper mapper)
+    public OrderController(IDbContextFactory<EShopDbContext> dbFactory, IMapper mapper, IOrderNotificator notificator)
     {
         this.dbFactory = dbFactory;
         this.mapper = mapper;
+        this.notificator = notificator;
     }
 
     [HttpGet]
@@ -78,6 +81,8 @@ public class OrderController : ControllerBase
 
         if (db.SaveChanges() >= 1)
         {
+            notificator.SendNewOrderNotification(order.CustomerEmail, dbOrder.Id);
+
             return Ok(mapper.Map<OrderDto>(dbOrder));
         }
 

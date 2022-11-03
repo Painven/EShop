@@ -13,6 +13,7 @@ public class CategoryController : ControllerBase
     private readonly IDbContextFactory<EShopDbContext> dbFactory;
     private readonly IMapper mapper;
 
+
     public CategoryController(IDbContextFactory<EShopDbContext> dbFactory, IMapper mapper)
     {
         this.dbFactory = dbFactory;
@@ -62,7 +63,7 @@ public class CategoryController : ControllerBase
 
             addResult = db.SaveChanges() >= 1;
         }
-        catch(Exception ex)
+        catch (Exception ex)
         {
             addResult = false;
         }

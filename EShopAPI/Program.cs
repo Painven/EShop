@@ -1,4 +1,5 @@
 using EShopAPI.DataAccess;
+using EShopAPI.Services;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -7,7 +8,7 @@ builder.Services.ConfigureMyServices();
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-
+builder.Services.AddTransient<IOrderNotificator, MailKitOrderEmailNotificator>();
 
 var app = builder.Build();
 app.UseCors("_myAllowSpecificOrigins");
@@ -33,6 +34,8 @@ static class ServiceCollectionExtensions
 {
     public static void ConfigureMyServices(this IServiceCollection services)
     {
+        
+
         services.AddAutoMapper(typeof(Program).Assembly);
 
         services.AddCors(options =>

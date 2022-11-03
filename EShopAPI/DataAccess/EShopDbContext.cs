@@ -1,6 +1,4 @@
-﻿using EShopAPI.Models;
-using EShopAPI.DataAccess;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 
 namespace EShopAPI.DataAccess;
 

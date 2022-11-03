@@ -44,7 +44,7 @@ public class ProductController : ControllerBase
     }
 
     [HttpPost]
-    public bool CreateNew([FromBody]ProductDto product)
+    public bool CreateNew([FromBody] ProductDto product)
     {
         using var db = dbFactory.CreateDbContext();
         bool addResult = false;

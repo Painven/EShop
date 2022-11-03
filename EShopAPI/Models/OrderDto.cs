@@ -3,7 +3,7 @@
 public record OrderDto
 {
     public int Id { get; init; }
-    public DateTime Created { get; init; } 
+    public DateTime Created { get; init; }
     public string CustomerName { get; init; }
     public string CustomerEmail { get; init; }
     public string ShippingMethod { get; init; }

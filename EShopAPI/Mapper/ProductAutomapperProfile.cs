@@ -1,12 +1,11 @@
 ﻿using AutoMapper;
 using EShopAPI.DataAccess;
 using EShopAPI.Models;
-using System.Text.RegularExpressions;
 
 namespace EShopAPI.Mapper;
 public class ProductAutomapperProfile : Profile
 {
-    static Dictionary<CacheImageType, string> cacheSizes = new ()
+    static Dictionary<CacheImageType, string> cacheSizes = new()
     {
         [CacheImageType.Category] = "150x150",
         [CacheImageType.Product] = "228x228",
@@ -26,7 +25,7 @@ public class ProductAutomapperProfile : Profile
         CreateMap<Category, CategoryDetailsDto>()
             .ForMember(c => c.ImageSmall, c => c.MapFrom(x => GetImageCacheFromOriginal(x.Image, CacheImageType.Category)))
             .ForMember(c => c.ProductsInCategory, c => c.MapFrom(x => x.Products.Count));
-        
+
     }
 
     private static string GetImageCacheFromOriginal(string src, CacheImageType type)

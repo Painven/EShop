@@ -7,18 +7,18 @@ namespace EShopAPI.DataAccess;
 public class Category
 {
     [Key]
-    [Column("id")] 
+    [Column("id")]
     public int Id { get; set; }
 
-    [Column("created")] 
+    [Column("created")]
     public DateTime Created { get; set; } = DateTime.Now;
 
     [Required]
     [MinLength(4)]
-    [Column("name")] 
+    [Column("name")]
     public string Name { get; set; } = string.Empty;
 
-    [Column("image")] 
+    [Column("image")]
     public string Image { get; set; } = string.Empty;
 
     public ICollection<Product> Products { get; set; } = new List<Product>();

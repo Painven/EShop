@@ -7,7 +7,7 @@ namespace EShopAPI.DataAccess;
 public class Order
 {
     [Key]
-    [Column("order_id")] 
+    [Column("order_id")]
     public int Id { get; set; }
 
     [Column("created")]
@@ -16,7 +16,7 @@ public class Order
     [Column("complete_date")]
     public DateTime? CompleteDate { get; set; } = DateTime.UtcNow;
 
-    [Column("customer_name")] 
+    [Column("customer_name")]
     public string CustomerName { get; set; }
 
     [Column("customer_email")]
