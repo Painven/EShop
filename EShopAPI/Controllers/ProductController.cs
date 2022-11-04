@@ -12,6 +12,7 @@ public class ProductController : ControllerBase
 {
     private readonly IDbContextFactory<EShopDbContext> dbFactory;
     private readonly IMapper mapper;
+    const int SEARCH_LIMIT = 50;
 
     public ProductController(IDbContextFactory<EShopDbContext> dbFactory, IMapper mapper)
     {
@@ -107,5 +108,30 @@ public class ProductController : ControllerBase
         }
 
         return NotFound();
+    }
+
+    [HttpGet("search/{text}")]
+    public ActionResult<ProductDto[]> SearchProducts(string text)
+    {
+        if(string.IsNullOrWhiteSpace(text) || text.Length < 3)
+        {
+            return BadRequest();
+        }
+
+        using var db = dbFactory.CreateDbContext();
+        string textLower = text.ToLower();
+
+        var products = db.Products
+            .Where(product => product.Name.ToLower().Contains(textLower))
+            .Select(x => mapper.Map<ProductDto>(x))
+            .Take(SEARCH_LIMIT)
+            .ToArray();
+
+        if(products.Length > 0)
+        {
+            return products;
+        }
+
+        return NoContent();
     }
 }
