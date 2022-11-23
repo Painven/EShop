@@ -49,6 +49,7 @@ public class OrderController : ControllerBase
 
         var dbOrder = db.Orders
             .Include(o => o.OrderLines)
+            .Include(o => o.OrderStatus)
             .SingleOrDefault(o => o.Id == id);
 
         if (dbOrder != null)

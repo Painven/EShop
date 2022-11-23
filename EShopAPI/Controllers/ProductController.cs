@@ -38,6 +38,31 @@ public class ProductController : ControllerBase
         return NoContent();
     }
 
+    [HttpGet("bestsellers")]
+    public ActionResult<ProductDto[]> GetBestsellersProducts([FromQuery]int itemsCount = 4)
+    {
+        if(itemsCount <= 0 || itemsCount >= 32)
+        {
+            return NoContent();
+        }
+
+        using var db = dbFactory.CreateDbContext();
+
+        var products = db.Products
+            .OrderByDescending(p => p.Price >= 10000 && p.Price <= 20000 && p.Name.Length <= 32)
+            .Take(itemsCount)
+            .Select(x => mapper.Map<ProductDto>(x))
+            .ToArray();
+
+        if (products.Length > 0)
+        {
+            return Ok(products);
+        }
+        return NoContent();
+    }
+
+    
+
     [HttpGet("{id}")]
     public ActionResult<ProductDto> Get(int id)
     {
