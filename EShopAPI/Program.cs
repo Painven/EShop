@@ -34,7 +34,7 @@ static class ServiceCollectionExtensions
 {
     public static void ConfigureMyServices(this IServiceCollection services)
     {
-        
+
 
         services.AddAutoMapper(typeof(Program).Assembly);
 

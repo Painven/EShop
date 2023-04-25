@@ -74,6 +74,7 @@ public class OrderController : ControllerBase
 
         db.Orders.Add(dbOrder);
 
+        dbOrder.OrderStatusId = 1;
         dbOrder.OrderLines.Clear(); // на всякий, что бы не проскоила цена от клиента
 
         foreach (var l in order.Products)
@@ -96,6 +97,35 @@ public class OrderController : ControllerBase
         }
         dbOrder.Created = DateTime.UtcNow;
 
+        // TODO: вынести в инициализацию БД 
+        if (db.OrderStatuses.Count() == 0)
+        {
+            db.OrderStatuses.Add(new OrderStatus()
+            {
+                Id = 1,
+                Name = "Создан",
+                SortOrder = 1
+            });
+            db.OrderStatuses.Add(new OrderStatus()
+            {
+                Id = 2,
+                Name = "Комплектация заказа",
+                SortOrder = 2
+            });
+            db.OrderStatuses.Add(new OrderStatus()
+            {
+                Id = 3,
+                Name = "В доставке",
+                SortOrder = 3
+            });
+            db.OrderStatuses.Add(new OrderStatus()
+            {
+                Id = 4,
+                Name = "Выполнен",
+                SortOrder = 4
+            });
+        }
+
         if (db.SaveChanges() >= 1)
         {
             var createdOrder = mapper.Map<OrderDto>(dbOrder);
@@ -109,7 +139,7 @@ public class OrderController : ControllerBase
     }
 
     [HttpPatch("{id}")]
-    public ActionResult<OrderDto> ChangeOrderStatus(int id, [FromQuery]string newStatus)
+    public ActionResult<OrderDto> ChangeOrderStatus(int id, [FromQuery] string newStatus)
     {
         using var db = dbFactory.CreateDbContext();
 
@@ -135,7 +165,7 @@ public class OrderController : ControllerBase
 
         var statuses = db.OrderStatuses.OrderBy(o => o.SortOrder).ToArray();
 
-        if(statuses.Length > 0)
+        if (statuses.Length > 0)
         {
             return statuses;
         }

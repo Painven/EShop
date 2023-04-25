@@ -39,9 +39,9 @@ public class ProductController : ControllerBase
     }
 
     [HttpGet("bestsellers")]
-    public ActionResult<ProductDto[]> GetBestsellersProducts([FromQuery]int itemsCount = 4)
+    public ActionResult<ProductDto[]> GetBestsellersProducts([FromQuery] int itemsCount = 4)
     {
-        if(itemsCount <= 0 || itemsCount >= 32)
+        if (itemsCount <= 0 || itemsCount >= 32)
         {
             return NoContent();
         }
@@ -61,8 +61,6 @@ public class ProductController : ControllerBase
         return NoContent();
     }
 
-    
-
     [HttpGet("{id}")]
     public ActionResult<ProductDto> Get(int id)
     {
@@ -79,7 +77,7 @@ public class ProductController : ControllerBase
         return NotFound();
     }
 
-        [HttpPost]
+    [HttpPost]
     public ActionResult CreateNew([FromBody] ProductDto product)
     {
         using var db = dbFactory.CreateDbContext();
@@ -91,9 +89,9 @@ public class ProductController : ControllerBase
 
             return db.SaveChanges() >= 1 ? Ok() : BadRequest();
         }
-        catch(Exception ex)
+        catch (Exception ex)
         {
-            
+
         }
         return BadRequest();
 
@@ -115,7 +113,7 @@ public class ProductController : ControllerBase
         return NotFound();
     }
 
-    [HttpPut("{id}")]
+    [HttpPut("{Id}")]
     public ActionResult UpdateProduct([FromBody] ProductDto product)
     {
         using var db = dbFactory.CreateDbContext();
@@ -138,7 +136,7 @@ public class ProductController : ControllerBase
     [HttpGet("search/{text}")]
     public ActionResult<ProductDto[]> SearchProducts(string text)
     {
-        if(string.IsNullOrWhiteSpace(text) || text.Length < 3)
+        if (string.IsNullOrWhiteSpace(text) || text.Length < 3)
         {
             return BadRequest();
         }
@@ -152,7 +150,7 @@ public class ProductController : ControllerBase
             .Take(SEARCH_LIMIT)
             .ToArray();
 
-        if(products.Length > 0)
+        if (products.Length > 0)
         {
             return products;
         }

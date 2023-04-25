@@ -14,11 +14,14 @@ export default {
         }
 
         try {
-            const fetchResponse = await fetch(
-                `${this.api_base}/${requestUri}`,
-                settings
-            );
+            const uri = `${this.api_base}/${requestUri}`;
+            console.log("Начинаем запрос по URI: " + uri);
+
+            const fetchResponse = await fetch(uri, settings);
             const serverResponse = await fetchResponse.json();
+
+            console.log("Ответ сервера: " + serverResponse);
+
             return serverResponse;
         } catch (ex) {
             console.log(ex);

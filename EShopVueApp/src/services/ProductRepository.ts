@@ -6,7 +6,7 @@ export default {
       return await EShopApi.SendRequest('products', 'POST', { ...product, categoryId });
    },
    async editProduct(product: IProductModel): Promise<boolean> {
-      return await EShopApi.SendRequest('products', 'PUT', product);
+      return await EShopApi.SendRequest(`products/${product.id}`, 'PUT', product);
    },
    async getProductById(productId: number) {
       return await EShopApi.SendRequest(`products/${productId}`);

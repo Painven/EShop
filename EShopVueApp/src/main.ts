@@ -7,6 +7,7 @@ import SearchBox from './components/SearchBox.vue'
 import CategoryCard from './components/CategoryCard.vue'
 import CategoryDetailsPaginator from './components/CategoryDetailsPaginator.vue'
 import HeaderMenu from './components/HeaderMenu.vue'
+import FooterMenu from './components/FooterMenu.vue'
 import CartMenu from './components/CartMenu.vue'
 import OrderSuccessDialog from './components/OrderSuccessDialog.vue'
 import OrderStatusDropdownButton from './components/OrderStatusDropdownButton.vue'
@@ -20,6 +21,7 @@ app.component("ProductCard", ProductCard);
 app.component("CategoryCard", CategoryCard);
 app.component("CategoryDetailsPaginator", CategoryDetailsPaginator);
 app.component("HeaderMenu", HeaderMenu);
+app.component("FooterMenu", FooterMenu);
 app.component("CartMenu", CartMenu);
 app.component("OrderSuccessDialog", OrderSuccessDialog);
 app.component("OrderStatusDropdownButton", OrderStatusDropdownButton);

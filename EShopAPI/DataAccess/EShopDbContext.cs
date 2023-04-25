@@ -11,6 +11,6 @@ public class EShopDbContext : DbContext
 
     public EShopDbContext(DbContextOptions<EShopDbContext> options) : base(options)
     {
-
+        Database.EnsureCreated();
     }
 }

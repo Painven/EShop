@@ -9,5 +9,7 @@ import { RouterLink, RouterView } from "vue-router";
         <div id="content">
             <RouterView :key="$route.fullPath" />
         </div>
+
+        <FooterMenu />
     </div>
 </template>
